@@ -5,6 +5,7 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
 const ObjectId = require('mongodb').ObjectId;
+const res = require('express/lib/response');
 
 app.use(cors());
 app.use(express.json());
@@ -19,15 +20,63 @@ async function run() {
     await client.connect();
     const database = client.db('IT-Essentials');
     const ordersCollection = database.collection('orders');
+    const usersCollection = database.collection('users');
+
+
+  
+    // GET ( Orders ) show to the UI
+    app.get('/orders', async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email}
+      const cursor = ordersCollection.find(query);
+      const orders = await cursor.toArray();
+      res.json(orders);
+    });
+
+
 
 
     //POST ( Orders ) send to the DB
     app.post('/orders', async (req, res) => {
       const order = req.body;
       const result = await ordersCollection.insertOne(order)
-      console.log(result);
       res.json(result)
     });
+
+
+    // save user in DB
+    app.post('/users', async(req,res)=> {
+      const user = req.body;
+      const result = await usersCollection.insertOne(user);
+      console.log(result);
+      res.json(result);
+    });
+
+
+
+    // for Admin
+    app.put('/users/admin', async(req, res) =>{
+      const user = req.body;
+      console.log('put', user);
+      const filter = {email: user.email};
+      const updateDoc = {$set:{role:'admin'}};
+      const result = await usersCollection.updateOne(filter , updateDoc) ;
+      res.json(result);
+    });
+
+
+    // send or cheak admin info
+    app.get('/users/:email', async(req, res) => {
+      const email = req.params.email ;
+      const query = {email: email} ;
+      const user = await usersCollection.findOne(query) ;
+      let isAdmin = false ;
+      if (user?.role === 'admin') {
+        isAdmin = true ;
+      }
+      res.json( {admin: isAdmin} ) ;
+    })
+
 
   }
   finally {
