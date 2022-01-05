@@ -21,9 +21,20 @@ async function run() {
     const database = client.db('IT-Essentials');
     const ordersCollection = database.collection('orders');
     const usersCollection = database.collection('users');
-
+    const servicesCollection = database.collection('services');
 
   
+
+    // POST ( services )
+    app.post ('/services', async (req, res) => {
+      const service = req.body ;
+      console.log('hit the post api', service);
+      const result = await servicesCollection.insertOne(service);
+      console.log(result);
+      res.json(result) ;
+    });
+
+
     // GET ( Orders ) show to the UI
     app.get('/orders', async (req, res) => {
       const email = req.query.email;
