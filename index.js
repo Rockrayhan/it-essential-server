@@ -23,9 +23,25 @@ async function run() {
     const usersCollection = database.collection('users');
     const servicesCollection = database.collection('services');
 
-  
 
-    // POST ( services )
+    // GET ( services ) show to the UI
+    app.get('/services', async (req, res) => {
+      const cursor = servicesCollection.find({}) ;
+      const services = await cursor.toArray();
+      res.send(services)
+    })
+  
+    // GET Single Services
+    app.get('/services/:id', async (req,res)=> {
+      const id = req.params.id;
+      console.log('goth the id', id);
+      const query = {_id: ObjectId(id)} ;
+      const service = await servicesCollection.findOne(query) ;
+      res.json(service) ;
+
+    })
+
+    // POST ( services ) send services to DB
     app.post ('/services', async (req, res) => {
       const service = req.body ;
       console.log('hit the post api', service);
