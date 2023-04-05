@@ -19,7 +19,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
   try {
     // All DB Collections
-    await client.connect();
+     client.connect();
     const database = client.db('IT-Essentials');
     const ordersCollection = database.collection('orders');
     const usersCollection = database.collection('users');
@@ -52,15 +52,6 @@ async function run() {
       res.json(result) ;
     });
 
-    // Delete ( services )
-    app.delete('/services/:id', async (req, res)=>{
-      const id = req.params.id ;
-      const query = {_id : ObjectId(id) } ;
-      const result = await servicesCollection.deleteOne(query) ;
-      res.json(result);
-    } )
-
-
     // GET ( Orders ) show to the UI
     app.get('/orders', async (req, res) => {
       const email = req.query.email;
@@ -69,7 +60,6 @@ async function run() {
       const orders = await cursor.toArray();
       res.json(orders);
     });
-
 
 
 
@@ -98,6 +88,24 @@ async function run() {
       console.log(result);
       res.json(result);
     });
+
+
+
+    // Delete ( services )
+    app.delete('/services/:id', async (req, res)=>{
+      const id = req.params.id ;
+      const query = {_id : ObjectId(id) } ;
+      const result = await servicesCollection.deleteOne(query) ;
+      res.json(result);
+    } );
+
+    // Delete (Orders)
+    app.delete('/orders/:id', async (req, res) => {
+      const id = req.params.id ;
+      const query = {_id : ObjectId(id)} ;
+      const result = await ordersCollection.deleteOne(query);
+      res.json(result);
+    }) ;
 
 
 
