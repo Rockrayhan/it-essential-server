@@ -30,7 +30,7 @@ async function run() {
     app.get('/services', async (req, res) => {
       const cursor = servicesCollection.find({}) ;
       const services = await cursor.toArray();
-      res.render(services)
+      res.send(services)
     })
   
     // GET Single Services
@@ -135,7 +135,7 @@ async function run() {
 
   }
   finally {
-    // await client.close() ; 
+    await client.close() ; 
   }
 
 }
